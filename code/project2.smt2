@@ -65,54 +65,80 @@
 
 ;; Formule 2
 (define-fun finitely_many_processes () Bool
-  ; Existuje takove p_max
-  (exists ((p_max Int))
-    ; ktere je proces a ...
-    (and
-      (is_process p_max)
-      ; pro vsechny ostatni x
-      (forall ((x Int))
-        (=>
-          ; pokud x je proces a x neni p_max
-          (and
-            (is_process x)
-            (not(= p_max x))
+  (and
+    ; existuje p_max
+    (exists ((p_max Int))
+      ; ktere je process a ...
+      (and
+        (is_process p_max)
+        ; pro vsechny x
+        (forall ((x Int))
+          (=>
+            ; pokud x je proces a x neni p_max
+            (and
+              (is_process x)
+              (not(= p_max x))
+            )
+            ; potom x je mensi nez p_max
+            (< x p_max)
           )
-          ; potom x je mensi nez p_max
-          ( < x p_max)
         )
       )
     )
-  )
+    ; existuje p_min
+    (exists ((p_min Int))
+      ; ktere je process a ...
+      (and
+        (is_process p_min)
+        ; pro vsechny x
+        (forall ((x Int))
+          (=>
+            ; pokud x je proces a x neni p_min
+            (and
+              (is_process x)
+              (not(= p_min x))
+            )
+            ; potom x je vetsi nez p_min
+            (> x p_min)
+          )
+        )
+      )
+    )
+  )  
 )
 
 ;; Formule 3
 (define-fun has_deadlock () Bool
-  ; pro vsechna p
-  (forall ((p Int))
-    ; pokud
-    (=>
-      ; p je proces v deadlocku
+  (and
+    ;existuje x ktere je procesem v dedlocku
+    (exists ((x Int))
       (and
-        (is_process p)
-        (in_deadlock p)
+        (is_process x)
+        (in_deadlock x)
       )
-      ; potom pro vsechna r
-      (forall ((r Int))
-        ; pokud
-        (=>
-          ; r je zdroj na ktery ceka p
+    )
+    ; pro vsechna p
+    (forall ((p Int))
+      ; pokud
+      (=>
+        ; p je proces v deadlocku
+        (and
+          (is_process p)
+          (in_deadlock p)
+        )
+        ; potom existuje r
+        (exists ((r Int))
+          ; r je zdroj na ktery ceka p a existuje o
           (and
             (is_resource r)
             (requests p r)
-          )
-          ; potom existuje o
-          (exists ((o Int))
-            ; takove ze o je proces v deadlocku ktery vlastni r
-            (and
-              (is_process o)
-              (in_deadlock o)
-              (owns o r)
+            (exists ((o Int))
+              ; takove ze o je proces v deadlocku ktery vlastni r
+              (and
+                (is_process o)
+                (in_deadlock o)
+                (owns o r)
+              )
             )
           )
         )
