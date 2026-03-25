@@ -57,13 +57,14 @@
         (owns p1 r)
         (owns p2 r)
       )
-      ; tak potom p1 a p2 jsou totozne
+      ; potom p1 a p2 jsou totozne
       (= p1 p2)
     )
   )
 )
 
 ;; Formule 2
+;; Existuje maximum a minimum
 (define-fun finitely_many_processes () Bool
   (and
     ; existuje p_max
@@ -108,6 +109,7 @@
 )
 
 ;; Formule 3
+;; Neni prazdna a vsechny procesy cekaji na nejaky jiny proces ktery ceka
 (define-fun has_deadlock () Bool
   (and
     ;existuje x ktere je procesem v dedlocku
@@ -133,7 +135,7 @@
             (is_resource r)
             (requests p r)
             (exists ((o Int))
-              ; takove ze o je proces v deadlocku ktery vlastni r
+              ; ktere je proces v deadlocku, ktery vlastni r
               (and
                 (is_process o)
                 (in_deadlock o)
