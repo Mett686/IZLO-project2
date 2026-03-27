@@ -44,6 +44,7 @@
 ; XLOGIN: xknotem00
 
 ;; Formule 1
+;; Pokud dva procesy sdili zdroje, musi se jednat o stejny proces
 (define-fun exclusive_resources () Bool
   ; Pro vsechny
   (forall ((r Int) (p1 Int) (p2 Int))
@@ -64,50 +65,34 @@
 )
 
 ;; Formule 2
+;; Mnozina procesu ma minimum a maximum
 (define-fun finitely_many_processes () Bool
-  (and
-    ; existuje p_max
-    (exists ((p_max Int))
-      ; ktere je process a ...
-      (and
-        (is_process p_max)
-        ; pro vsechny x
-        (forall ((x Int))
-          (=>
-            ; pokud x je proces a x neni p_max
-            (and
-              (is_process x)
-              (not(= p_max x))
-            )
-            ; potom x je mensi nez p_max
-            (< x p_max)
+  ; existuji p_max a p_min
+  (exists ((p_max Int)(p_min Int))
+    ; ktere jsou procesy a ...
+    (and
+      (is_process p_max)
+      (is_process p_min)
+      ; pro vsechny x
+      (forall ((x Int))
+        (=>
+          ; pokud x je proces
+          (is_process x)
+          ; potom x lezi v rozsahu <p_min; p_max>
+          (and
+            (<= x p_max)
+            (>= x p_min)
           )
         )
       )
     )
-    ; existuje p_min
-    (exists ((p_min Int))
-      ; ktere je process a ...
-      (and
-        (is_process p_min)
-        ; pro vsechny x
-        (forall ((x Int))
-          (=>
-            ; pokud x je proces a x neni p_min
-            (and
-              (is_process x)
-              (not(= p_min x))
-            )
-            ; potom x je vetsi nez p_min
-            (> x p_min)
-          )
-        )
-      )
-    )
-  )  
+  ) 
 )
 
 ;; Formule 3
+;; existuje proces v deadlocku a
+;; pro vsechny procesy v deadlocku existuje proces v deadlocku,
+;; ktery drzi soubor na ktery cekaji
 (define-fun has_deadlock () Bool
   (and
     ;existuje x ktere je procesem v dedlocku
@@ -126,20 +111,15 @@
           (is_process p)
           (in_deadlock p)
         )
-        ; potom existuje r
-        (exists ((r Int))
-          ; r je zdroj na ktery ceka p a existuje o
+        ; potom existuje r a o takove ze
+        (exists ((r Int)(o Int))
+          ; r je zdroj na ktery ceka p a o je vlastnikem souboru v deadlocku
           (and
             (is_resource r)
             (requests p r)
-            (exists ((o Int))
-              ; takove ze o je proces v deadlocku ktery vlastni r
-              (and
-                (is_process o)
-                (in_deadlock o)
-                (owns o r)
-              )
-            )
+            (is_process o)
+            (owns o r)
+            (in_deadlock o)
           )
         )
       )
