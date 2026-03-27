@@ -58,14 +58,14 @@
         (owns p1 r)
         (owns p2 r)
       )
-      ; tak potom p1 a p2 jsou totozne
+      ; potom p1 a p2 jsou totozne
       (= p1 p2)
     )
   )
 )
 
 ;; Formule 2
-;; Mnozina procesu ma minimum a maximum
+;; Existuje maximum a minimum
 (define-fun finitely_many_processes () Bool
   ; existuji p_max a p_min
   (exists ((p_max Int)(p_min Int))
